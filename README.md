@@ -293,15 +293,31 @@ To extend into a PhD paper: (i) replicate the single-product protocol on 5+ own 
 
 ## View this repo as a website (GitHub Pages)
 
-`preview.html` is a self-contained site (no build step): ranking chart, comparison table, playbook timeline and a **10-question interactive quiz** (beginner → pro with instant scoring). Two ways to publish it:
+`preview.html` is a self-contained site (no build step): ranking chart, comparison table, playbook timeline and a **10-question interactive quiz** (beginner → pro with instant scoring). Live links (repo `M0-AR/mvp-launch-platforms-benchmark-2026`):
 
-**Option A — Settings (simplest, 2026 flow, no Actions needed):**
-1. Push this repo to GitHub (public).
-2. Open **Settings → Pages → Build and deployment → Source: Deploy from a branch**.
-3. Branch: your main branch + `/(root)`, Save. GitHub publishes `preview.html` at `https://<you>.github.io/<repo>/preview.html` within ~1 minute.
-4. Optional: set the repo's website (About → gear → Website) to that URL so visitors land on the visual version.
+- Home: https://m0-ar.github.io/mvp-launch-platforms-benchmark-2026/
+- Full study page: https://m0-ar.github.io/mvp-launch-platforms-benchmark-2026/preview.html
+- Mirror: https://m0-ar.github.io/mvp-launch-platforms-benchmark-2026/docs/preview.html
 
-**Option B — Custom domain (optional):** add `CNAME` file with your domain → point DNS to GitHub Pages → enforce HTTPS in the same Pages settings page.
+**Recommended setting (verified 2026-10-06):** **Settings → Pages → Source: Deploy from a branch → Branch `main` + `/(root)`**, Save. The repo ships an entry page at `index.html` (redirects to `preview.html`), the canonical page at `preview.html`, and mirrors at `docs/index.html` + `docs/preview.html` (asset paths adjusted), plus empty `.nojekyll` files at root and `docs/` — so the home page and `/preview.html` resolve under either source choice (`/` or `/docs`). Prefer `/(root)`: then `/`, `/preview.html` **and** `/docs/preview.html` all return 200. Under `/docs`, `/` and `/preview.html` return 200 (only `/docs/preview.html` 404s, expected — nothing above the source is served).
+
+Diagnose in 10 seconds (no login):
+
+```bash
+BASE="https://m0-ar.github.io/mvp-launch-platforms-benchmark-2026"
+for p in "" "preview.html" "docs/preview.html"; do
+  printf "%s -> " "/$p"
+  curl -s -o /dev/null -w "%{http_code}\n" "$BASE/$p"
+done
+```
+
+| `/` | `/preview.html` | `/docs/preview.html` | Meaning |
+|---|---|---|---|
+| 200 | 200 | 200 | source `/(root)` ✅, all good (this repo's setup) |
+| 200 | 200 | 404 | source `/docs`; entry + page fine, docs-path not served |
+| 404 | 404 | 404 | Pages off / still building / wrong branch — wait 1–2 min, check the Actions "pages build and deployment" run |
+
+**Custom domain (optional):** add a `CNAME` file with your domain → point DNS to GitHub Pages → enforce HTTPS in the same Pages settings page. Set the repo's website (About → gear → Website) to the home URL above so visitors land on the visual version.
 
 Local check before pushing: `python3 -m http.server 8000` in the repo root, then open `http://localhost:8000/preview.html` — quiz, charts and table must work with no console errors.
 
@@ -309,7 +325,9 @@ Local check before pushing: `python3 -m http.server 8000` in the repo root, then
 
 ```
 ├── README.md                 # this file (start here)
-├── preview.html              # interactive site + quiz (Pages-ready, no build)
+├── preview.html              # interactive site + quiz (canonical, Pages-ready, no build)
+├── index.html                # Pages entry (redirects to preview.html + fallbacks)
+├── .nojekyll                 # keep Pages from Jekyll-processing (root + docs/)
 ├── PAPER.md                  # short-paper draft (IMRaD)
 ├── METHODOLOGY.md            # verification protocol + PhD extension plan
 ├── CITATION.cff  LICENSE    # cite + reuse (MIT)
@@ -317,7 +335,9 @@ Local check before pushing: `python3 -m http.server 8000` in the repo root, then
 ├── experiments/              # 01 liveness · 02 scoring · 03 patterns · 04 simulator · make_demo_assets
 ├── results/                  # generated JSON/CSV + figures (do not hand-edit)
 ├── tests/test_benchmark.py   # 6 gates (25 rows, https, ranking, patterns, lift)
-├── docs/screenshots/         # 3 dated live captures + key chart (in-repo, never rots)
+├── docs/preview.html         # mirror of root preview.html (asset paths adjusted for /docs source)
+├── docs/index.html           # mirror entry (redirects to docs/preview.html)
+├── docs/screenshots/         # 3 dated live captures + key chart + site capture (in-repo, never rots)
 ├── docs/video/               # demo-bars.gif + demo.mp4 (≤1 MB each)
 ├── docs/                     # fallback docs site (mkdocs/www)
 ├── Dockerfile  docker-compose.yml  requirements.txt
@@ -333,6 +353,7 @@ Local check before pushing: `python3 -m http.server 8000` in the repo root, then
 - **Non-tech buyers (e.g. dentists, HR)?** Founder-board votes will be friendly and conversions zero. Launch for feedback, but validate with 5 buyer interviews + landing page + 50–200 private beta in the buyers' own community.
 - **Why do two sources disagree on a number (e.g. DR 75 vs 76)?** Different pull dates/methods. The ledger pins one dated value per cell and records the delta in `verification_source` — re-check at cite time.
 - **Can I reuse this for my thesis?** Yes (MIT). Replicate the protocol on your own MVPs, keep the falsifiers, cite via `CITATION.cff`.
+- **The Pages site 404s but the deploy is green?** A green deploy only proves *something* built — run the 3-probe check in [View this repo as a website](#view-this-repo-as-a-website-github-pages): with source `/(root)` expect 200/200/200; the entry file must sit at the top of the chosen source (`index.html` is provided at both root and `docs/`).
 
 ## Roadmap
 
@@ -369,7 +390,7 @@ Found a dead link, a changed price, or a better source? Open a PR: update `data/
 @software{mvp_launch_benchmark_2026,
   title  = {MVP Launch Platforms Benchmark 2026: Beyond Product Hunt},
   year   = {2026},
-  url    = {https://github.com/YOUR-ORG/mvp-launch-platforms-benchmark-2026},
+  url    = {https://github.com/M0-AR/mvp-launch-platforms-benchmark-2026},
   note   = {25 platforms, live-verified 2026-10-06, 4 experiments, 6 tests}
 }
 ```
