@@ -1,0 +1,7 @@
+__pycache__/
+.venv/
+*.pyc
+results/live_verification.csv
+results/*.json
+results/figures/*.png
+.ipynb_checkpoints/

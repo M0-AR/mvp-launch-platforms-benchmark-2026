@@ -1,0 +1,5 @@
+site_name: MVP Benchmark 2026 Docs
+nav:
+  - Home: index.md
+  - Paper: paper.md
+  - Methodology: methodology.md

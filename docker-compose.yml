@@ -1,0 +1,32 @@
+services:
+  research:
+    build: .
+    volumes:
+      - ./data:/work/data:ro
+      - ./results:/work/results
+    command: >
+      bash -c "python experiments/01_live_liveness_check.py &&
+               python experiments/02_benchmark_scoring.py &&
+               python experiments/03_hidden_patterns.py &&
+               python experiments/04_zero_to_hero_simulator.py &&
+               pytest -q"
+  notebook:
+    image: python:3.11-slim
+    working_dir: /work
+    volumes:
+      - .:/work
+    ports:
+      - "8888:8888"
+    command: >
+      bash -c "pip install -q -r requirements.txt jupyter && jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token='mvp2026'"
+    profiles: ["notebook"]
+  docs:
+    image: python:3.11-slim
+    working_dir: /work
+    volumes:
+      - .:/work:ro
+    ports:
+      - "8000:8000"
+    command: >
+      bash -c "pip install -q mkdocs && mkdocs serve -f docs/mkdocs.yml -a 0.0.0.0:8000 || python -m http.server 8000"
+    profiles: ["docs"]

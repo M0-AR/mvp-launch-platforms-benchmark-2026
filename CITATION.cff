@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+title: MVP Launch Platforms Benchmark 2026 — Beyond Product Hunt
+version: 1.0.0
+date-released: 2026-10-06
+license: MIT
+repository-code: https://github.com/YOUR-ORG/mvp-launch-platforms-benchmark-2026
+keywords: [mvp, product-hunt, startup-validation, launch-platforms, benchmark, reproducibility]
+authors:
+  - name: Independent Reproduction Study
